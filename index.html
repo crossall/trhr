@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life Strategy V3 - Deep Dive</title>
+    <title>Life Strategy V4 - Multi Scenarios</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4A90E2;
-            --secondary: #50E3C2;
-            --accent: #FF6B6B;
-            --bg-gradient: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-card: rgba(255, 255, 255, 0.95);
-            --text-main: #2D3748;
+            --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --sidebar-bg: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --accent-color: #203a43;
+            --text-main: #333;
         }
 
         * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
@@ -23,311 +21,299 @@
             background: var(--bg-gradient);
             color: var(--text-main);
             height: 100vh;
-            overflow: hidden;
             display: flex;
-            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* 공통 UI 스타일 (V2와 동일하되 가독성 강화) */
-        .container { display: flex; flex: 1; overflow: hidden; position: relative; }
-        
+        /* 레이아웃 */
         .sidebar {
             width: 280px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(15px);
-            padding: 25px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.1);
             color: white;
-            display: flex; flex-direction: column;
+            z-index: 10;
+        }
+
+        .main {
+            flex: 1;
+            padding: 40px;
             overflow-y: auto;
+            position: relative;
         }
 
-        .menu-btn {
-            width: 100%; padding: 14px; margin-bottom: 8px; border: none; border-radius: 8px;
-            background: transparent; color: rgba(255,255,255,0.7); cursor: pointer; text-align: left;
-            transition: 0.2s; font-size: 0.95rem; font-weight: 500;
+        /* 타이틀 & 메뉴 */
+        .brand { font-size: 1.4rem; font-weight: 700; margin-bottom: 40px; color: white; letter-spacing: 1px; }
+        .menu-category { font-size: 0.8rem; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; font-weight: 600; margin-top: 20px; }
+
+        .nav-btn {
+            width: 100%; padding: 12px 15px; border: none; background: transparent;
+            color: rgba(255,255,255,0.7); text-align: left; cursor: pointer;
+            border-radius: 8px; transition: 0.2s; margin-bottom: 5px; font-size: 0.95rem;
         }
-        .menu-btn:hover, .menu-btn.active { background: rgba(255, 255, 255, 0.2); color: white; font-weight: 700; padding-left: 20px; }
+        .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.2); color: white; font-weight: 600; }
+        .nav-btn.active { border-left: 4px solid #4facfe; }
 
-        .main { flex: 1; padding: 30px; overflow-y: auto; background: rgba(245, 247, 250, 0.9); }
-
+        /* 카드 디자인 */
         .card {
-            background: white; border-radius: 16px; padding: 35px; margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); animation: fadeIn 0.5s ease;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideIn 0.4s ease;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 1.8rem; color: #1A365D; margin-bottom: 10px; border-bottom: 2px solid #E2E8F0; padding-bottom: 15px; }
-        h2 { font-size: 1.4rem; color: #2C5282; margin-top: 30px; }
-        h3 { font-size: 1.1rem; color: #2B6CB0; margin-top: 20px; display: flex; align-items: center; }
-        
+        h1 { font-size: 2rem; margin-top: 0; color: #1a2a6c; }
+        h2 { font-size: 1.5rem; color: #b21f1f; margin-top: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h3 { color: #fdbb2d; background: #333; display: inline-block; padding: 5px 12px; border-radius: 4px; font-size: 1rem; margin-top: 25px; }
+        p { line-height: 1.7; color: #555; }
+
+        /* 시나리오 뱃지 */
         .badge {
-            display: inline-block; padding: 4px 12px; border-radius: 20px; 
-            font-size: 0.8rem; font-weight: bold; margin-right: 8px;
-            background: #EBF8FF; color: #2B6CB0;
+            display: inline-block; padding: 6px 14px; border-radius: 20px;
+            font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
+        .badge.usa { background: #e0f2fe; color: #0369a1; }
+        .badge.local { background: #dcfce7; color: #15803d; }
+        .badge.edu { background: #fae8ff; color: #86198f; }
 
-        /* 비교 테이블 스타일 */
-        .compare-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.95rem; }
-        .compare-table th, .compare-table td { padding: 12px; border: 1px solid #E2E8F0; text-align: left; vertical-align: top; }
-        .compare-table th { background: #F7FAFC; color: #4A5568; width: 50%; }
-        .path-a { border-top: 3px solid #4299E1; }
-        .path-b { border-top: 3px solid #48BB78; }
-
-        /* 체크리스트 */
-        .checklist label {
-            display: block; padding: 10px; margin: 5px 0; border-radius: 8px;
-            background: #F7FAFC; cursor: pointer; transition: 0.2s;
+        /* 비교 테이블 */
+        .comparison { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .comparison th { background: #f1f5f9; padding: 15px; text-align: left; color: #475569; }
+        .comparison td { padding: 15px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        
+        /* 체크리스트 스타일 */
+        .todo-item {
+            display: flex; align-items: flex-start; margin-bottom: 12px;
+            background: #f8fafc; padding: 12px; border-radius: 8px;
         }
-        .checklist label:hover { background: #EBF8FF; }
+        .todo-item input { margin-top: 4px; margin-right: 12px; }
 
-        /* 아이들 케어 섹션 */
-        .kids-zone {
-            background: #FFFAF0; border: 1px solid #FBD38D; border-radius: 12px; padding: 20px; margin-top: 20px;
-        }
-        .kids-title { color: #C05621; font-weight: bold; margin-bottom: 10px; display: block; }
-
-        /* 모바일 헤더 */
-        .mobile-header { display: none; padding: 15px; background: #1A2980; color: white; justify-content: space-between; align-items: center; }
-        .hamburger { font-size: 24px; cursor: pointer; }
-
+        /* 모바일 대응 */
+        .mobile-header { display: none; padding: 15px; background: rgba(0,0,0,0.8); color: white; justify-content: space-between; align-items: center; }
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
-            .container { flex-direction: column; }
-            .sidebar { position: absolute; height: 100%; left: -280px; transition: 0.3s; z-index: 1000; }
-            .sidebar.open { left: 0; }
+            body { flex-direction: column; overflow: auto; height: auto; }
+            .sidebar { display: none; }
+            .sidebar.active { display: flex; position: fixed; top: 0; left: 0; height: 100%; width: 80%; z-index: 999; }
+            .main { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
     <div class="mobile-header">
-        <div class="hamburger" onclick="toggleMenu()">☰</div>
-        <span style="font-weight:700;">Strategic Planner V3</span>
-        <div></div>
+        <span onclick="toggleSidebar()" style="font-size:24px; cursor:pointer;">☰</span>
+        <strong>Life Path Simulator V4</strong>
+        <span></span>
     </div>
 
-    <div class="container">
-        <div class="sidebar" id="sidebar">
-            <div style="margin-bottom:30px;">
-                <h2 style="color:white; margin:0;">Strategy V3</h2>
-                <small style="opacity:0.7;">Deep Dive Analysis</small>
-            </div>
-            
-            <button class="menu-btn active" onclick="loadContent('overview', this)">📊 전체 개요 (Overview)</button>
-            <button class="menu-btn" onclick="loadContent('step1', this)">🕵️‍♀️ STEP 1. 비밀 준비</button>
-            <button class="menu-btn" onclick="loadContent('step2', this)">🛤️ STEP 2. 명분과 이동</button>
-            <button class="menu-btn" onclick="loadContent('step3', this)">⚖️ STEP 3. 법적 정리</button>
-            <button class="menu-btn" onclick="loadContent('step4', this)">🏠 STEP 4. 주거 통합</button>
-            <button class="menu-btn" onclick="loadContent('step5', this)">💎 STEP 5. 미래 완성</button>
-            <hr style="border-color:rgba(255,255,255,0.1); width:100%;">
-            <button class="menu-btn" onclick="loadContent('kids', this)">🧸 아이들 적응 전략</button>
+    <div class="sidebar" id="sidebar">
+        <div class="brand">🚀 Multi-Path V4</div>
+        
+        <div class="menu-category">Compare</div>
+        <button class="nav-btn active" onclick="loadPage('compare')">📊 시나리오 한눈에 비교</button>
+
+        <div class="menu-category">Path A : Global</div>
+        <button class="nav-btn" onclick="loadPage('usa')">🇺🇸 미국 유학/이민 루트</button>
+
+        <div class="menu-category">Path B : Local</div>
+        <button class="nav-btn" onclick="loadPage('jeju')">🏝️ 지방/제주 교육도시 루트</button>
+
+        <div class="menu-category">Path C : Education</div>
+        <button class="nav-btn" onclick="loadPage('intl')">🎓 국제중/특목고 루트</button>
+
+        <div class="menu-category">Analysis</div>
+        <button class="nav-btn" onclick="loadPage('risk')">⚖️ 법적/현실적 리스크</button>
+    </div>
+
+    <div class="main" id="content">
         </div>
 
-        <div class="main" id="content-area">
-            </div>
-    </div>
-
     <script>
-        const data = {
-            overview: `
+        const pages = {
+            compare: `
                 <div class="card">
-                    <h1>📊 전략 오버뷰 : The Big Picture</h1>
-                    <p>단순한 재혼이 아닙니다. <strong>두 개의 전문직 커리어와 두 명의 아이를 안전하게 착륙시키는 5년 프로젝트</strong>입니다.</p>
+                    <h1>📊 3가지 인생 시나리오 비교</h1>
+                    <p>두 사람의 성향, 경제력, 아이들의 특성에 맞춰 최적의 경로를 선택하세요.</p>
                     
-                    <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
-                        <div style="flex:1; min-width:200px; background:#F7FAFC; padding:15px; border-radius:10px;">
-                            <strong>🤵 남 (39, 미혼)</strong><br>
-                            - 역할: 경제적 기반(사업/교수) + 아이들의 멘토(Tech)<br>
-                            - 핵심과제: 여자(43)가 올 수 있는 지역 선점
-                        </div>
-                        <div style="flex:1; min-width:200px; background:#F7FAFC; padding:15px; border-radius:10px;">
-                            <strong>👩 여 (43, 기혼)</strong><br>
-                            - 역할: 정서적 지주 + 가계 안정(교사)<br>
-                            - 핵심과제: 이혼 과정에서 상처 최소화 & 양육권 확보
-                        </div>
-                    </div>
-
-                    <h3>⏳ 타임라인 요약</h3>
-                    <ul style="line-height:1.6;">
-                        <li><strong>1~2년차:</strong> 각자도생 같지만 치밀한 물밑 준비 (비밀 유지 필수)</li>
-                        <li><strong>3년차:</strong> 법적 정리 (폭풍의 시기)</li>
-                        <li><strong>4~5년차:</strong> 물리적 결합 및 사업 확장</li>
-                    </ul>
-                </div>
-            `,
-            step1: `
-                <div class="card">
-                    <span class="badge">Year 0-1</span>
-                    <h1>STEP 1. 은밀한 준비 (The Secret Phase)</h1>
-                    <p>수면 위로는 평온한 일상을 유지하며, 수면 아래에서 탈출을 준비합니다.</p>
-
-                    <h3>🔍 시나리오별 준비 전략</h3>
-                    <table class="compare-table">
-                        <tr>
-                            <th class="path-a">Path A: 남자가 '판'을 먼저 깐다</th>
-                            <th class="path-b">Path B: 여자가 먼저 움직인다 (비추천)</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <strong>[추천]</strong> 남자가 교수로 임용되거나 사업체를 타지역(수도권 외곽/지방 거점)에 설립합니다.<br>
-                                <br>
-                                - 장점: "일 때문에 간다"는 완벽한 명분.<br>
-                                - 핵심: 여자가 나중에 전근 오기 좋은 학군 지역으로 선정.
-                            </td>
-                            <td>
-                                여자가 먼저 별거를 시작하거나 휴직합니다.<br>
-                                <br>
-                                - 단점: 남편의 의심을 살 수 있고, 교사 사회에서 소문이 날 리스크 큼.<br>
-                                - 위험: 준비 안 된 상태의 별거는 양육권 다툼에서 불리함.
-                            </td>
-                        </tr>
+                    <table class="comparison">
+                        <thead>
+                            <tr>
+                                <th style="width:20%">구분</th>
+                                <th style="width:26%">🇺🇸 Path A (미국)</th>
+                                <th style="width:27%">🏝️ Path B (지방/제주)</th>
+                                <th style="width:27%">🎓 Path C (수도권)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>핵심 컨셉</strong></td>
+                                <td>완벽한 신분 세탁 & 새로운 출발</td>
+                                <td>삶의 질 & 자연 친화적 교육</td>
+                                <td>엘리트 교육 & 고수익 사업</td>
+                            </tr>
+                            <tr>
+                                <td><strong>남자의 역할</strong></td>
+                                <td>미국 대학/Tech 취업 (비자 스폰서)</td>
+                                <td>지방 국립대 교수 / 로컬 창업</td>
+                                <td>강남/판교 대형 코딩 아카데미 설립</td>
+                            </tr>
+                            <tr>
+                                <td><strong>여자의 역할</strong></td>
+                                <td>박사 유학 (F1 비자) → 교수 도전</td>
+                                <td>교육청 파견/전직 or 국제학교 교사</td>
+                                <td>초등 교사 유지 + 교육 컨설팅</td>
+                            </tr>
+                            <tr>
+                                <td><strong>아이들 교육</strong></td>
+                                <td>미국 공립/사립 (영어 완벽 해결)</td>
+                                <td>국제학교(KIS 등) or 자연학교</td>
+                                <td>국제중/특목고 입시 올인</td>
+                            </tr>
+                            <tr>
+                                <td><strong>난이도/비용</strong></td>
+                                <td><span style="color:red">최상</span> (비자/거주비용/소송)</td>
+                                <td><span style="color:green">중하</span> (주거비 절감)</td>
+                                <td><span style="color:orange">상</span> (사교육비/주거비 폭발)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>비밀 보장</strong></td>
+                                <td>⭐⭐⭐⭐⭐ (완벽 차단)</td>
+                                <td>⭐⭐⭐ (좁은 지역사회 주의)</td>
+                                <td>⭐⭐ (노출 위험 높음)</td>
+                            </tr>
+                        </tbody>
                     </table>
-
-                    <div class="kids-zone">
-                        <span class="kids-title">🧸 이 시기 아이들은?</span>
-                        엄마의 심리적 변화를 가장 먼저 눈치챕니다. 죄책감 때문에 아이들에게 과도하게 잘해주거나 감정 기복을 보이지 않도록 <strong>'평정심 연기'</strong>가 필요합니다.
-                    </div>
                 </div>
             `,
-            step2: `
+            usa: `
                 <div class="card">
-                    <span class="badge">Year 1-2</span>
-                    <h1>STEP 2. 명분과 이동 (The Alibi)</h1>
-                    <p>남자는 떠나고, 여자는 홀로 남아 '이혼의 불가피성'을 증명하는 시기입니다.</p>
+                    <span class="badge usa">Path A : The American Dream</span>
+                    <h1>🇺🇸 미국 유학 & 이민 루트</h1>
+                    <p>한국의 모든 시선과 과거로부터 탈출하여, 완전히 새로운 신분으로 시작합니다.</p>
 
-                    <h3>🛤️ 남자의 지역 선정 전략</h3>
+                    <h3>🗺️ 단계별 로드맵</h3>
+                    <div class="todo-item">
+                        <input type="checkbox">
+                        <div><strong>1단계 (준비):</strong> 남자는 미국 포닥/교수직/IT기업 취업 확정(H1B/O1). 여자는 박사과정(PhD) 입학 허가(I-20) 취득.</div>
+                    </div>
+                    <div class="todo-item">
+                        <input type="checkbox">
+                        <div><strong>2단계 (출국):</strong> 각자 출국합니다. (동반 출국 X). 현지에서 인접한 주(State)나 도시로 이동.</div>
+                    </div>
+                    <div class="todo-item">
+                        <input type="checkbox">
+                        <div><strong>3단계 (이혼/체류):</strong> 여자가 현지에서 유학 생활 중 한국 남편과 이혼 진행. (이때가 가장 위험 - 아이 여권/체류 동의 문제)</div>
+                    </div>
+
+                    <h3>⚠️ 치명적 리스크 (Hague Convention)</h3>
+                    <p style="color:#b21f1f; background:#fff1f2; padding:15px; border-radius:8px;">
+                        <strong>헤이그 아동 탈취 협약:</strong> 남편 동의 없이 아이들을 데리고 출국하거나, 귀국하지 않으면 '국제 아동 탈취'가 됩니다.<br>
+                        → <strong>해결책:</strong> 유학을 핑계로 남편에게 "아이들 영어 교육을 위해 2년만 다녀오겠다"고 <strong>사전 동의서(Notarized Consent)</strong>를 완벽하게 받아내야 합니다.
+                    </p>
+                </div>
+            `,
+            jeju: `
+                <div class="card">
+                    <span class="badge local">Path B : The Jeju/Local Model</span>
+                    <h1>🏝️ 지방 거점/제주 교육도시 루트</h1>
+                    <p>복잡한 서울을 떠나, 여유로운 환경에서 아이들을 키우며 '워크 앤 라이프'를 실현합니다.</p>
+
+                    <h3>🏫 교육 & 직업 전략</h3>
                     <ul>
-                        <li><strong>1순위 (신도시):</strong> 젊은 부부가 많아 이혼/재혼 가정에 대한 편견이 적고, 깨끗한 학교가 많음.</li>
-                        <li><strong>2순위 (대학가):</strong> 남자의 직장(대학) 근처이면서, 여자가 석/박사 파견 등을 핑계로 오기 좋음.</li>
+                        <li><strong>남자:</strong> 지방 국립대 교수 임용 or 제주 첨단단지(Kakao 등) 근처 에듀테크 창업.</li>
+                        <li><strong>여자:</strong> 제주도/세종시 등 특별자치도 교육청으로 일방 전입(파견) 신청. 또는 '국제학교' 한국어 교사 채용 도전.</li>
+                        <li><strong>아이들:</strong> KIS, NLCS 등 국제학교 입학 (영어 해결) or 혁신학교.</li>
                     </ul>
 
-                    <h3>💔 여자의 이혼 빌드업 (Build-up)</h3>
-                    <p>갑작스러운 이혼 요구는 남편의 반발과 의심(외도?)을 부릅니다. 합리적인 사유가 축적되어야 합니다.</p>
-                    <div class="checklist">
-                        <label>✅ 성격 차이, 시댁 갈등, 경제관 차이 등을 기록(증거화)</label>
-                        <label>✅ 아이들 교육 문제로 인한 잦은 다툼 (제3자가 보기에 납득 가능)</label>
-                        <label>✅ 상담 센터 방문 기록 남기기 ("노력했으나 안되더라"는 명분)</label>
+                    <h3>🏠 주거 전략 (타운하우스)</h3>
+                    <div class="todo-item">
+                        <input type="checkbox">
+                        <div><strong>따로 또 같이:</strong> 타운하우스 단지 내 101동(여자), 105동(남자) 형태로 거주.</div>
+                    </div>
+                    <div class="todo-item">
+                        <input type="checkbox">
+                        <div><strong>주말농장/캠핑:</strong> 자연 활동을 매개로 남자와 아이들이 자연스럽게 어울림. (선생님→삼촌→새아빠 빌드업)</div>
                     </div>
                 </div>
             `,
-            step3: `
+            intl: `
                 <div class="card">
-                    <span class="badge">Year 2-3</span>
-                    <h1>STEP 3. 법적 정리 (The Crisis)</h1>
-                    <p>가장 위험한 시기입니다. <strong>'재산'을 포기하더라도 '양육권'과 '명예'를 지키는 협상</strong>이 필요합니다.</p>
+                    <span class="badge edu">Path C : Elite Education</span>
+                    <h1>🎓 수도권 국제중/특목고 루트</h1>
+                    <p>이동이 어렵다면, <strong>'자녀 교육'을 최고의 명분</strong>으로 삼아 생활을 분리합니다.</p>
 
-                    <table class="compare-table">
-                        <tr>
-                            <th>협의 이혼 (Best)</th>
-                            <th>이혼 소송 (Worst)</th>
-                        </tr>
-                        <tr>
-                            <td>- 조용히 처리 가능.<br>- 아이들 충격 최소화.<br>- 재산 분할에서 조금 양보하더라도 빠른 종결 추천.</td>
-                            <td>- 진흙탕 싸움.<br>- 교사 평판 치명타.<br>- 남편이 뒷조사 시작할 가능성 높음 (남자와의 관계 노출 위험).</td>
-                        </tr>
-                    </table>
-
-                    <div class="kids-zone">
-                        <span class="kids-title">🧸 초5, 초3 아이들에게는?</span>
-                        <strong>초5 (사춘기 진입):</strong> "엄마가 행복하지 않아. 너희를 사랑하지만 아빠와는 살 수 없어."라고 솔직하되 담백하게 설명.<br>
-                        <strong>초3:</strong> "엄마 아빠가 따로 살아도 너를 사랑하는 건 변함없어." 무한 안심 필요.<br>
-                        🚨 <strong>절대 금기:</strong> 이 시기에 남자(새아빠 후보)를 절대 소개하지 마세요. "저 사람 때문에 우리 집이 깨졌다"고 생각하면 평생 원수가 됩니다.
+                    <h3>📚 시나리오 흐름</h3>
+                    <div class="todo-item">
+                        <input type="checkbox">
+                        <div><strong>명분 만들기:</strong> "아이를 청심국제중/화산중 등 기숙 학교에 보내려면 대치동/목동/분당으로 가야 해." (남편과 주말부부/별거 유도)</div>
                     </div>
-                </div>
-            `,
-            step4: `
-                <div class="card">
-                    <span class="badge">Year 3-4</span>
-                    <h1>STEP 4. 주거 통합 (Integration)</h1>
-                    <p>바로 합치지 않습니다. <strong>'따로 또 같이'</strong> 전략으로 서서히 스며듭니다.</p>
-
-                    <h3>🏠 주거 시나리오 비교</h3>
-                    <table class="compare-table">
-                        <tr>
-                            <th>시나리오 A: 인접 아파트 (추천)</th>
-                            <th>시나리오 B: 듀플렉스/대형평수</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <strong>[안정성 최우선]</strong><br>
-                                여자는 A동, 남자는 B동 거주.<br>
-                                - 남자의 집은 '공부방/컴퓨터실'로 활용.<br>
-                                - 아이들이 "컴퓨터 배우러" 놀러 가며 자연스럽게 친해짐.
-                            </td>
-                            <td>
-                                <strong>[경제성 우위]</strong><br>
-                                큰 집을 구해 방을 나눔.<br>
-                                - 아이들이 받아들일 준비가 안 되면 '가출' 등 반발 심함.<br>
-                                - 5학년 아이가 중학생이 된 후(기숙사 등) 고려해볼 만함.
-                            </td>
-                        </tr>
-                    </table>
-
-                    <h3>👨‍🏫 남자의 포지셔닝: "멋진 멘토"</h3>
-                    <p>아빠 행세 금지. <strong>"컴퓨터 잘 가르쳐주는 박사님 삼촌"</strong>으로 접근하세요. 아이들의 호기심(게임, 코딩, 드론 등)을 자극해 스스로 따르게 만들어야 합니다.</p>
-                </div>
-            `,
-            step5: `
-                <div class="card">
-                    <span class="badge">Year 4-5+</span>
-                    <h1>STEP 5. 미래 완성 (The Empire)</h1>
-                    <p>가족이자 비즈니스 파트너로서의 결합입니다.</p>
-
-                    <h3>💼 부부 동업 모델: [AI 에듀 센터]</h3>
-                    <ul>
-                        <li><strong>남 (Ph.D):</strong> 커리큘럼 개발, 영재교육, 코딩 심화 지도 (권위 담당)</li>
-                        <li><strong>여 (교사 경력):</strong> 학생 관리, 학부모 상담, 초등 교과 연계 (실무 담당)</li>
-                    </ul>
-                    <p>💡 교사 퇴직 후 연금 + 센터 수익 + 교수 월급 = <strong>경제적 자유 달성</strong></p>
-                    <p>이 시점이 되면 아이들도 머리가 커서, 엄마의 경제적 능력과 행복을 인정하고 재혼을 받아들입니다.</p>
-                </div>
-            `,
-            kids: `
-                <div class="card">
-                    <h1>🧸 아이들 적응 전략 (Deep Dive)</h1>
-                    <p>이 계획의 성공/실패는 <strong>첫째(현재 초5, 계획 실행 시 중2)</strong>에게 달려 있습니다.</p>
-
-                    <h3>⚡ 시기별 핵심 포인트</h3>
-                    <div class="checklist">
-                        <label><strong>D-2년 (현재):</strong> 아빠와의 갈등을 아이에게 중계하지 마세요. 아이는 본능적으로 눈치챕니다.</label>
-                        <label><strong>D-Year (이혼):</strong> 전학은 가급적 '중학교 입학' 타이밍에 맞추세요. 학기 중 전학은 교우관계 단절로 원망을 삽니다.</label>
-                        <label><strong>D+1년 (적응):</strong> 남자가 아이 공부(수학/과학/컴퓨터)를 봐주며 '도움이 되는 존재'로 인식되어야 합니다.</label>
+                    <div class="todo-item">
+                        <input type="checkbox">
+                        <div><strong>남자의 역할:</strong> 해당 학군지에서 '영재 코딩/AI 컨설팅' 학원 개원. 아이의 '입시 코디네이터' 역할을 자처하며 가정에 개입.</div>
+                    </div>
+                    <div class="todo-item">
+                        <input type="checkbox">
+                        <div><strong>경제적 통합:</strong> 여자의 교사 월급 + 남자의 학원 수익으로 고소득 유지.</div>
                     </div>
 
-                    <h3>💬 아이들 설득 화법 (예시)</h3>
-                    <div style="background:#f0fff4; padding:15px; border-radius:10px; margin-top:10px;">
-                        <strong>❌ 나쁜 예:</strong> "이제 이 아저씨가 너희 새아빠야. 인사해." (강요)<br>
-                        <strong>⭕ 좋은 예:</strong> "엄마가 일적으로 도움받는 교수님이야. 너 컴퓨터 좋아하잖아? 이것 좀 물어볼까?" (호기심 유도 → 관계 형성 → 나중에 오픈)
-                    </div>
+                    <h3>💡 장점과 단점</h3>
+                    <p>아이들이 좋은 학교에 진학하면 모든 가정 불화의 명분이 '아이 성공'으로 덮어집니다. 단, 사교육비 지출이 크고 남편이 수시로 찾아올 수 있어 긴장감이 높습니다.</p>
+                </div>
+            `,
+            risk: `
+                <div class="card">
+                    <h1>⚖️ 현실적 리스크 체크</h1>
+                    <p>어떤 경로를 선택하든 반드시 해결해야 할 공통 숙제입니다.</p>
+
+                    <h3>1. 아이들의 정서 (Age Factor)</h3>
+                    <p><strong>초5 (예비 중1):</strong> 친구 관계가 목숨보다 중요한 시기입니다. 미국이나 제주도로 강제 이주 시 '우울증'이나 '부모 원망'이 생길 수 있습니다.<br>
+                    → <span style="color:blue">Solution:</span> 이동 전에 아이가 그 지역(미국/제주)을 '동경'하게 만들어야 합니다. (여행, 캠프 등으로 사전 작업 필수)</p>
+
+                    <h3>2. 경제적 문제 (Money Flow)</h3>
+                    <p>두 집 살림 + 소송 비용 + 유학/국제학교 비용은 막대합니다.<br>
+                    → <span style="color:blue">Solution:</span> 남자의 '사업(학원/스타트업)'이 궤도에 오르기 전까지는 여자가 교직을 절대 그만두면 안 됩니다. (현금 흐름 유지)</p>
+
+                    <h3>3. 전 남편의 반격</h3>
+                    <p>양육권 소송 시 "엄마가 외도(또는 부적절한 관계)를 위해 아이를 데리고 나갔다"고 주장하면 치명적입니다.<br>
+                    → <span style="color:blue">Solution:</span> 모든 시나리오에서 '남자'의 존재는 이혼 확정 후 최소 1년 뒤에 등장해야 합니다.</p>
                 </div>
             `
         };
 
-        function loadContent(key, btn) {
-            // 버튼 활성화
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
+        function loadPage(pageKey) {
+            // 버튼 활성화 처리
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
 
-            // 내용 교체 효과
-            const area = document.getElementById('content-area');
-            area.style.opacity = 0;
+            // 모바일 사이드바 닫기
+            if(window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+
+            // 내용 로드
+            const contentDiv = document.getElementById('content');
+            contentDiv.style.opacity = 0;
             setTimeout(() => {
-                area.innerHTML = data[key];
-                area.style.opacity = 1;
-                
-                // 모바일 사이드바 닫기
-                if(window.innerWidth <= 768) {
-                    toggleMenu();
-                }
+                contentDiv.innerHTML = pages[pageKey];
+                contentDiv.style.opacity = 1;
             }, 200);
         }
 
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-
         // 초기 로드
-        loadContent('overview', document.querySelector('.menu-btn'));
+        document.getElementById('content').innerHTML = pages['compare'];
+
+        // 모바일 사이드바 토글
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
     </script>
 </body>
 </html>
