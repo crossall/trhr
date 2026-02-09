@@ -3,256 +3,401 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life Strategy V5 - Long Term</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Life Strategy Bible V6.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --sidebar-width: 300px;
-            --accent: #38bdf8;
-            --text-main: #e2e8f0;
-            --card-bg: rgba(30, 41, 59, 0.7);
+            --bg-dark: #121212;
+            --sidebar-bg: #1e1e1e;
+            --card-bg: #252525;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --accent-gold: #FFD700;
+            --accent-blue: #40C4FF;
+            --accent-risk: #FF5252;
+            --border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
         
         body {
             margin: 0;
-            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            background-color: var(--bg-dark);
             color: var(--text-main);
             height: 100vh;
             display: flex;
             overflow: hidden;
         }
 
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #666; }
+
         /* 사이드바 */
         .sidebar {
-            width: var(--sidebar-width);
-            background: rgba(0, 0, 0, 0.2);
-            border-right: 1px solid rgba(255,255,255,0.05);
-            padding: 30px 20px;
+            width: 320px;
+            background: var(--sidebar-bg);
+            border-right: var(--border);
             display: flex; flex-direction: column;
-            backdrop-filter: blur(10px);
             z-index: 100;
+            transition: transform 0.3s ease;
         }
-        
-        .brand { font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 5px; }
-        .subtitle { font-size: 0.8rem; color: #94a3b8; margin-bottom: 40px; }
 
-        .category { font-size: 0.75rem; text-transform: uppercase; color: #64748b; margin: 25px 0 10px; font-weight: 700; letter-spacing: 1px; }
-
-        .nav-item {
-            padding: 14px; margin-bottom: 5px; border-radius: 8px; cursor: pointer;
-            transition: 0.2s; color: #cbd5e1; display: flex; align-items: center;
+        .brand-box {
+            padding: 25px;
+            border-bottom: var(--border);
+            background: linear-gradient(180deg, rgba(255,215,0,0.05) 0%, rgba(0,0,0,0) 100%);
         }
-        .nav-item:hover, .nav-item.active { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-        .nav-item i { margin-right: 10px; width: 20px; text-align: center; }
+        .brand-title { font-size: 1.4rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 1px; }
+        .brand-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; }
 
-        /* 메인 영역 */
-        .main { flex: 1; padding: 50px; overflow-y: auto; position: relative; }
+        .menu-scroll { flex: 1; overflow-y: auto; padding: 15px; }
         
-        .content-card {
+        .chapter-title {
+            font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);
+            margin: 20px 0 10px 10px; font-weight: 700; letter-spacing: 1px;
+        }
+
+        .nav-btn {
+            width: 100%; text-align: left; padding: 12px 15px; margin-bottom: 5px;
+            background: transparent; border: none; color: var(--text-main);
+            border-radius: 8px; cursor: pointer; transition: 0.2s;
+            font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); }
+        .nav-btn.active { background: rgba(64, 196, 255, 0.1); color: var(--accent-blue); font-weight: 600; border-left: 3px solid var(--accent-blue); }
+        
+        /* 메인 컨텐츠 */
+        .main { flex: 1; padding: 0; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+        .content-container { max-width: 1000px; margin: 0 auto; padding: 50px 30px; }
+
+        /* 카드 스타일 */
+        .bible-card {
             background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 20px;
+            border: var(--border);
+            border-radius: 12px;
             padding: 40px;
-            max-width: 1000px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 2.2rem; color: white; margin-top: 0; }
-        h2 { color: var(--accent); font-size: 1.4rem; margin-top: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
-        p { line-height: 1.8; color: #cbd5e1; font-size: 1.05rem; }
-
-        .tag {
-            display: inline-block; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem;
-            margin-right: 8px; font-weight: 600;
-        }
-        .tag.long { background: #312e81; color: #a5b4fc; }
-        .tag.short { background: #064e3b; color: #6ee7b7; }
-        .tag.risk { background: #450a0a; color: #fca5a5; }
-
-        /* 시나리오 박스 */
-        .scenario-box {
-            background: rgba(255,255,255,0.03); border-radius: 12px; padding: 25px; margin-top: 20px;
-            border-left: 4px solid var(--accent);
-        }
-        .scenario-title { font-weight: 700; font-size: 1.2rem; color: white; margin-bottom: 10px; display: block; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: var(--border); padding-bottom: 20px; }
+        .card-tag { font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; }
         
-        .pros-cons { display: flex; gap: 20px; margin-top: 20px; }
-        .pc-col { flex: 1; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 10px; }
-        .pc-title { font-weight: bold; margin-bottom: 10px; display: block; color: white; }
-
-        /* 모바일 헤더 */
-        .mobile-header { display: none; padding: 15px; background: #0f172a; border-bottom: 1px solid #333; align-items: center; justify-content: space-between; }
+        h1 { font-size: 2rem; margin: 0; color: white; }
+        h2 { font-size: 1.5rem; color: var(--accent-blue); margin-top: 30px; margin-bottom: 15px; }
+        h3 { font-size: 1.1rem; color: var(--accent-gold); margin-top: 25px; display: flex; align-items: center; gap: 10px; }
+        p, li { line-height: 1.7; color: #d0d0d0; font-size: 1rem; }
         
+        .highlight-box {
+            background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 20px; border-radius: 8px; margin: 20px 0;
+        }
+
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn {
+            padding: 8px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #aaa; cursor: pointer; border-radius: 20px; transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--accent-blue); color: #000; font-weight: bold; border-color: var(--accent-blue); }
+
+        /* 모바일 */
+        .mobile-header { display: none; padding: 15px; background: var(--sidebar-bg); align-items: center; justify-content: space-between; border-bottom: var(--border); }
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
-            .sidebar { position: fixed; height: 100%; left: -300px; transition: 0.3s; }
-            .sidebar.active { left: 0; }
-            .main { padding: 20px; }
-            .pros-cons { flex-direction: column; }
+            .sidebar { position: fixed; height: 100%; transform: translateX(-100%); width: 85%; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+            .sidebar.open { transform: translateX(0); }
+            .content-container { padding: 20px; }
+            h1 { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="mobile-header">
-        <span onclick="document.querySelector('.sidebar').classList.toggle('active')" style="font-size:24px; cursor:pointer;">☰</span>
-        <span style="font-weight:bold;">Life Strategy V5</span>
+        <span onclick="toggleSidebar()" style="font-size:24px; cursor:pointer;">☰</span>
+        <span style="font-weight:700; color:var(--accent-gold);">Strategy Bible</span>
         <span></span>
     </div>
 
-    <div class="sidebar">
-        <div class="brand">⏳ The Long Game</div>
-        <div class="subtitle">10년 대계(大計) 시뮬레이터</div>
+    <div class="sidebar" id="sidebar">
+        <div class="brand-box">
+            <div class="brand-title">THE BIBLE V6</div>
+            <div class="brand-sub">Comprehensive Life Strategy</div>
+        </div>
+        
+        <div class="menu-scroll">
+            <div class="chapter-title">Chapter 1. Time Horizon</div>
+            <button class="nav-btn active" onclick="loadContent('plan_3yr')">⚡ 3년 플랜 (Aggressive)</button>
+            <button class="nav-btn" onclick="loadContent('plan_5yr')">⚖️ 5년 플랜 (Balanced)</button>
+            <button class="nav-btn" onclick="loadContent('plan_10yr')">🐢 10년 플랜 (Long-term)</button>
 
-        <div class="category">Variable 1: 양육권 선택</div>
-        <div class="nav-item active" onclick="load('custody_dad')">👨‍👦 Path A: 아이가 아빠 선택</div>
-        <div class="nav-item" onclick="load('custody_mom')">👩‍👦 Path B: 아이가 엄마 선택</div>
+            <div class="chapter-title">Chapter 2. Locations</div>
+            <button class="nav-btn" onclick="loadContent('loc_usa')">🇺🇸 미국/해외 (Global)</button>
+            <button class="nav-btn" onclick="loadContent('loc_jeju')">🏝️ 제주/지방 (Local)</button>
+            <button class="nav-btn" onclick="loadContent('loc_seoul')">🏙️ 수도권 학군지 (Biz)</button>
 
-        <div class="category">Variable 2: 시간 지평 (Waiting)</div>
-        <div class="nav-item" onclick="load('wait_3yr')">⚡ 3년 플랜 (빠른 결합)</div>
-        <div class="nav-item" onclick="load('wait_10yr')">🐢 10년 플랜 (Empty Nest)</div>
+            <div class="chapter-title">Chapter 3. Variables</div>
+            <button class="nav-btn" onclick="loadContent('var_custody')">👨‍👧 양육권 (Kids' Choice)</button>
+            <button class="nav-btn" onclick="loadContent('var_risk')">⚠️ 리스크 대응 매뉴얼</button>
 
-        <div class="category">Special Strategy</div>
-        <div class="nav-item" onclick="load('man_role')">🤵 남자의 10년 준비</div>
-        <div class="nav-item" onclick="load('weekend_mom')">👜 비양육 엄마의 삶</div>
+            <div class="chapter-title">Appendix</div>
+            <button class="nav-btn" onclick="loadContent('role_def')">🤵👰 역할 정의서</button>
+        </div>
     </div>
 
-    <div class="main" id="content">
-        </div>
+    <div class="main">
+        <div class="content-container" id="content-area">
+            </div>
+    </div>
 
     <script>
-        const pages = {
-            custody_dad: `
-                <div class="content-card">
-                    <span class="tag risk">High Emotional Pain</span>
-                    <span class="tag short">Fast Freedom</span>
-                    <h1>Path A: 아이가 아빠를 선택할 경우</h1>
-                    <p>가장 가슴 아프지만, <strong>두 남녀의 결합 속도는 가장 빠른</strong> 현실적인 루트입니다. 아이가 사춘기(초5~중2)일 때 "전학 가기 싫어", "아빠가 좋아(경제력/자유)" 등의 이유로 아빠를 택할 수 있습니다.</p>
+        const db = {
+            plan_3yr: `
+                <div class="bible-card">
+                    <div class="card-header">
+                        <h1>⚡ 3년 플랜 : 과감한 승부수</h1>
+                        <span class="card-tag" style="background:#FF5252; color:white;">High Risk, Fast Return</span>
+                    </div>
+                    <p>가장 에너지가 많이 소모되지만, 3년 안에 완벽한 자유를 얻는 "속전속결" 경로입니다. 국내와 해외 옵션을 선택할 수 있습니다.</p>
 
-                    <div class="scenario-box">
-                        <span class="scenario-title">🗓️ 실행 로드맵</span>
-                        <p>1. <strong>이혼 확정:</strong> 양육권은 아빠에게 주되, <strong>'면접교섭권(주말/방학)'</strong>을 최대한 강력하게 확보합니다.<br>
-                        2. <strong>엄마의 이동:</strong> 학교 근처나, 아이가 오기 편한 곳으로 거처를 옮깁니다.<br>
-                        3. <strong>남자의 합류:</strong> 엄마가 혼자 사는 집에 남자가 들어오거나, 바로 옆집에 살며 사실상 동거를 시작합니다.</p>
+                    <div class="tab-container">
+                        <button class="tab-btn active" onclick="switchTab('3yr_dom')">Option A: 국내 (지방이전)</button>
+                        <button class="tab-btn" onclick="switchTab('3yr_glo')">Option B: 미국 (탈출)</button>
                     </div>
 
-                    <div class="pros-cons">
-                        <div class="pc-col" style="border-top: 3px solid #38bdf8;">
-                            <span class="pc-title">👍 장점 (Pros)</span>
-                            - 여자가 육아 부담에서 해방되어 남자와 온전한 커플 생활 가능.<br>
-                            - 남자가 '새아빠' 역할을 강요받지 않아도 됨.<br>
-                            - 경제적으로 매우 여유로움.
+                    <div id="3yr_dom">
+                        <h3>🏢 Option A: 국내 지방 거점 확보</h3>
+                        <ul>
+                            <li><strong>1년차 (이동):</strong> 남자가 먼저 지방 국립대/연구소/창업으로 이주. 여자는 주말부부/별거 명분 축적.</li>
+                            <li><strong>2년차 (법적정리):</strong> 이혼 소송/합의 진행. 여자는 남자가 있는 도시로 전입(파견/휴직).</li>
+                            <li><strong>3년차 (결합):</strong> 법적 정리 완료 후, 인근 단지 거주하며 사실상 공동 육아 시작.</li>
+                        </ul>
+                    </div>
+                    <div id="3yr_glo" style="display:none;">
+                        <h3>✈️ Option B: 미국/해외 "Escape Plan"</h3>
+                        <div class="highlight-box">
+                            <strong>핵심 전략:</strong> 남자의 취업 비자(H1B/O1) + 여자의 유학 비자(F1) 동시 진행
                         </div>
-                        <div class="pc-col" style="border-top: 3px solid #f472b6;">
-                            <span class="pc-title">👎 단점 & 리스크</span>
-                            - 여자의 죄책감("아이를 버렸다")으로 인한 우울증 위험.<br>
-                            - 아이가 엄마를 원망할 가능성.<br>
-                            - <strong>해결책:</strong> 주말마다 아이와 '환상적인 데이트'를 하며 "엄마는 너를 버린 게 아니라, 아빠와 맞지 않아 따로 사는 것"임을 끊임없이 확인시켜야 함.
-                        </div>
+                        <ul>
+                            <li><strong>1년차 (비자):</strong> 남자는 미국 Tech 기업/대학 오퍼 확정. 여자는 박사/방문연구원 합격.</li>
+                            <li><strong>2년차 (출국):</strong> 남편에게 "아이들 영어 교육 2년만 시키자"고 설득하여 <strong>동의서</strong> 받고 여자/아이 출국.</li>
+                            <li><strong>3년차 (이혼):</strong> 해외 체류 중 이혼 통보. (귀국 거부 시 헤이그 협약 리스크 주의 → 2년차에 현지 변호사 선임 필수)</li>
+                        </ul>
                     </div>
                 </div>
             `,
-            custody_mom: `
-                <div class="content-card">
-                    <span class="tag long">Slow & Steady</span>
-                    <h1>Path B: 아이가 엄마를 선택할 경우</h1>
-                    <p>기존에 논의했던 표준 모델입니다. 시간이 걸리고 절차가 복잡하지만, 여자의 심리적 안정감은 가장 높습니다.</p>
+            plan_5yr: `
+                <div class="bible-card">
+                    <div class="card-header">
+                        <h1>⚖️ 5년 플랜 : 안정적 연착륙</h1>
+                        <span class="card-tag" style="background:#40C4FF; color:black;">Recommended</span>
+                    </div>
+                    <p>가장 현실적이고 아이들의 정서적 충격이 적은 "정석" 코스입니다. 교사의 커리어와 남자의 사업을 동시에 잡습니다.</p>
 
-                    <div class="scenario-box">
-                        <span class="scenario-title">💡 핵심 전략 수정 (V5)</span>
-                        <p>남자가 "10년도 기다린다"고 했으므로, <strong>서두르지 않는 것</strong>이 승부수입니다.<br>
-                        1. 이혼 후 <strong>최소 2년은 '싱글맘'</strong>으로 지내며 아이를 안정시킵니다.<br>
-                        2. 남자는 '키다리 아저씨'처럼 뒤에서 경제적/정서적 지원만 합니다.<br>
-                        3. 아이가 중학생/고등학생이 되어 "엄마도 남친 있어?"라고 물어볼 때 자연스럽게 오픈합니다.</p>
+                    <div class="tab-container">
+                        <button class="tab-btn active" onclick="switchTab('5yr_jeju')">Option A: 제주/세종</button>
+                        <button class="tab-btn" onclick="switchTab('5yr_biz')">Option B: 수도권 사업</button>
+                    </div>
+
+                    <div id="5yr_jeju">
+                        <h3>🏝️ Option A: 교육특구 이주 (제주/세종)</h3>
+                        <ul>
+                            <li><strong>1~2년차:</strong> 남자가 먼저 제주/세종에 '에듀테크/코딩 센터' 설립하여 기반 닦음.</li>
+                            <li><strong>3년차:</strong> 여자가 '파견/전보' 신청하여 합류. 자연스러운 별거 시작.</li>
+                            <li><strong>4년차:</strong> 이혼 합의. 남자는 아이들의 '승마/골프/코딩 선생님'으로 친밀도 최상.</li>
+                            <li><strong>5년차:</strong> 타운하우스나 듀플렉스 주택 건축하여 "따로 또 같이" 생활.</li>
+                        </ul>
+                    </div>
+                    <div id="5yr_biz" style="display:none;">
+                        <h3>🏙️ Option B: 수도권 비즈니스 파트너</h3>
+                        <ul>
+                            <li><strong>1~3년차:</strong> 남자는 판교/분당 등에서 학원 대형화. 여자는 현직 유지하며 자금 투자.</li>
+                            <li><strong>4년차:</strong> 여자가 명퇴 혹은 휴직 후 센터장 취임. 경제적 공동체 완성.</li>
+                            <li><strong>5년차:</strong> 경제력을 바탕으로 이혼 및 고급 주거지 합가.</li>
+                        </ul>
                     </div>
                 </div>
             `,
-            wait_3yr: `
-                <div class="content-card">
-                    <span class="tag short">3 Year Plan</span>
-                    <h1>⚡ 3년 단기 속결 플랜</h1>
-                    <p>가장 에너지가 많이 들지만, 빨리 안정을 찾고 싶을 때 선택합니다.</p>
-
-                    <h3>🌊 타임라인</h3>
+            plan_10yr: `
+                <div class="bible-card">
+                    <div class="card-header">
+                        <h1>🐢 10년 플랜 : The Grand Strategy</h1>
+                        <span class="card-tag" style="background:#FFD700; color:black;">Wealth & Honor</span>
+                    </div>
+                    <p>남자가 "10년도 기다린다"고 했을 때 가능한 최상의 시나리오. <strong>'Empty Nest'(빈 둥지)</strong> 전략입니다.</p>
+                    
+                    <h3>🎓 전략 핵심: 아이 대학 입학 = D-Day</h3>
                     <ul>
-                        <li><strong>1년차:</strong> 별거 시작 및 이혼 소송/합의 종결.</li>
-                        <li><strong>2년차:</strong> 각자 독립 거주. 남자는 여자의 집 근처로 이사.</li>
-                        <li><strong>3년차:</strong> 재혼 혹은 완전 합가.</li>
+                        <li><strong>현재 ~ D-9년:</strong> 여자는 '엄마' 역할에 충실. 남자는 '교수/사업가'로서 압도적 부(Wealth) 축적.</li>
+                        <li><strong>Relationship:</strong> 두 사람은 10년간 '비밀 연인(Soulmate)' 관계 유지. 애틋함이 동력이 됨.</li>
+                        <li><strong>D-Day (10년 후):</strong> 막내가 대학 기숙사로 떠나는 날, 여자는 "졸혼" 선언.</li>
+                        <li><strong>결말:</strong> 아무런 양육권 분쟁 없이, 축적된 부를 가지고 제2의 신혼 시작.</li>
                     </ul>
-                    <p style="color:#fca5a5; margin-top:20px;">※ 주의: 아이들이 어릴 때(초등) 진행되므로 정서적 반발이 가장 심할 수 있습니다.</p>
-                </div>
-            `,
-            wait_10yr: `
-                <div class="content-card">
-                    <span class="tag long">10 Year Plan</span>
-                    <h1>🐢 10년 "Empty Nest" 플랜 (강력 추천)</h1>
-                    <p><strong>"남자는 10년을 기다린다."</strong> 이 한마디가 모든 리스크를 없앨 수 있습니다.<br>
-                    아이가 성인이 되어 대학(기숙사)으로 떠나는 순간(Empty Nest)을 D-Day로 잡습니다.</p>
-
-                    <div class="scenario-box">
-                        <span class="scenario-title">🌟 이 플랜이 완벽한 이유</span>
-                        <p>1. <strong>양육권 분쟁 불필요:</strong> 여자는 남편과 법적 부부만 유지하거나(쇼윈도), 이혼하되 아이 양육에만 전념합니다.<br>
-                        2. <strong>완벽한 준비:</strong> 남자는 10년 동안 교수직 정착 + 사업 성공으로 <strong>압도적인 경제력</strong>을 만듭니다.<br>
-                        3. <strong>비밀 연애:</strong> 두 사람은 10년간 '영혼의 파트너'이자 '비밀 연인'으로 지냅니다. 이 기간의 애틋함이 관계를 더 단단하게 합니다.<br>
-                        4. <strong>결말:</strong> 아이가 대학 가면, 여자는 "내 할 일 다 했다"며 황혼 이혼(졸혼)하고 남자에게 갑니다. 아무도 비난할 수 없습니다.</p>
+                    <div class="highlight-box">
+                        "가장 도덕적 비난이 적고, 경제적으로 가장 풍요로운 길입니다."
                     </div>
                 </div>
             `,
-            man_role: `
-                <div class="content-card">
-                    <h1>🤵 남자의 10년: "기다림은 수동적이지 않다"</h1>
-                    <p>남자가 39세에서 49세가 되는 10년은, 남자의 인생에서 <strong>가장 전성기</strong>를 만들 수 있는 시간입니다.</p>
+            loc_usa: `
+                <div class="bible-card">
+                    <h1>🇺🇸 미국/해외 (The Global Path)</h1>
+                    <p>한국 사회의 시선에서 완전히 자유로워지는 길입니다.</p>
 
-                    <h3>🛠️ 구체적 행동 지침</h3>
-                    <ol>
-                        <li><strong>교수/박사 커리어 완성:</strong> 10년 뒤 여자가 왔을 때, 사회적으로 존경받는 위치에 있어야 합니다.</li>
-                        <li><strong>자산 증식 (Build Assets):</strong> 여자가 맨몸으로 와도 평생 풍족하게 살 수 있는 기반(부동산/연금/사업체)을 완성하세요.</li>
-                        <li><strong>외모/건강 관리:</strong> 49세가 되어도 30대 후반처럼 보이도록 관리해야 합니다.</li>
-                        <li><strong>아이들의 '멘토' 빌드업:</strong> 여자의 아이들이 크면서 진로/학업 고민이 생길 때, <strong>"엄마가 아는 교수님"</strong>으로서 결정적인 도움을 주며 호감을 쌓습니다.</li>
-                    </ol>
+                    <h3>📂 필수 체크리스트</h3>
+                    <ul>
+                        <li><strong>VISA (남):</strong> O-1 (특기자 비자) 혹은 H-1B (취업). 박사 학위 소지자라 NIW(영주권) 신청 추천.</li>
+                        <li><strong>VISA (여):</strong> F-1 (학생) 혹은 J-1 (방문연구). 자녀는 F-2/J-2 동반 비자.</li>
+                        <li><strong>Education:</strong> 아이들이 미국 공립학교 적응 실패 시(왕따 등) 리스크 큼 → 초기 1년 사립/튜터 비용 확보 필수.</li>
+                    </ul>
                 </div>
             `,
-            weekend_mom: `
-                <div class="content-card">
-                    <h1>👜 비양육 엄마(Non-Custodial Mom)의 삶</h1>
-                    <p>아이가 아빠를 선택했을 때, 여자가 겪을 삶과 대처법입니다.</p>
+            loc_jeju: `
+                <div class="bible-card">
+                    <h1>🏝️ 제주/지방 (The Local Path)</h1>
+                    <p>자연 친화적 삶 + 국제학교의 장점.</p>
 
-                    <div class="scenario-box">
-                        <span class="scenario-title">💡 주말 엄마 전략</span>
-                        <p>- 평일: 교사로서의 커리어 + 남자와의 자유로운 삶 (자기개발, 운동, 데이트)<br>
-                        - 주말: 아이를 만나 <strong>'친구 같은 엄마'</strong>로서 최고의 시간을 보냄 (잔소리는 아빠 몫, 즐거움은 엄마 몫).</p>
+                    <h3>🏫 교육 로드맵</h3>
+                    <ul>
+                        <li><strong>국제학교:</strong> KIS, NLCS, BHA (학비 연 3~5천만원). 영어 해결 가능.</li>
+                        <li><strong>혁신학교:</strong> 납읍초 등 인기 혁신학교는 위장전입 단속 심함 → 실거주 필수.</li>
+                        <li><strong>남자의 역할:</strong> 제주도는 좁아서 소문 빠름. 철저히 '원장님' 혹은 '삼촌' 호칭 유지.</li>
+                    </ul>
+                </div>
+            `,
+            loc_seoul: `
+                <div class="bible-card">
+                    <h1>🏙️ 수도권 학군지 (The Business Path)</h1>
+                    <p>경제적 이익 극대화 모델.</p>
+                    
+                    <h3>💰 수익 구조</h3>
+                    <ul>
+                        <li><strong>초등 교육(여) + 코딩/AI(남):</strong> 대치/목동/분당에서 가장 핫한 조합.</li>
+                        <li><strong>리스크:</strong> 남편이 학원에 찾아오거나, 학부모들 사이에 소문날 가능성 상존.</li>
+                        <li><strong>대응:</strong> 학원과 거주지를 차로 30분 이상 거리로 분리.</li>
+                    </ul>
+                </div>
+            `,
+            var_custody: `
+                <div class="bible-card">
+                    <h1>👨‍👧 양육권 변수 (Scenario Matrix)</h1>
+                    <p>아이가 누구를 선택하느냐에 따라 여자의 삶은 180도 달라집니다.</p>
+
+                    <div class="tab-container">
+                        <button class="tab-btn active" onclick="switchTab('cus_mom')">Case A: 엄마 선택</button>
+                        <button class="tab-btn" onclick="switchTab('cus_dad')">Case B: 아빠 선택</button>
+                    </div>
+
+                    <div id="cus_mom">
+                        <h3>👩‍👧‍👦 아이가 엄마를 따라갈 때 (Standard)</h3>
+                        <ul>
+                            <li><strong>주거:</strong> 방 3개 이상 필수. 남자의 공간(서재) 확보 필요.</li>
+                            <li><strong>남자 역할:</strong> '엄격한 아빠' 흉내 금지. 무조건 '재밌고 돈 잘 쓰는 삼촌'.</li>
+                            <li><strong>갈등:</strong> 사춘기에 "친아빠 보고 싶어" 할 때 쿨하게 보내줘야 함.</li>
+                        </ul>
+                    </div>
+                    <div id="cus_dad" style="display:none;">
+                        <h3>👨‍👦 아이가 아빠를 따라갈 때 (Freedom)</h3>
+                        <ul>
+                            <li><strong>상황:</strong> 아이가 "전학 싫어", "아빠가 돈 더 많아"라며 잔류 희망.</li>
+                            <li><strong>여자 전략:</strong> 죄책감 갖지 말 것. <strong>'주말 엄마(Weekend Mom)'</strong> 포지션 전환.</li>
+                            <li><strong>장점:</strong> 평일에는 남자와 완벽한 신혼 생활 가능. 양육 스트레스 제로.</li>
+                            <li><strong>주의:</strong> 아이와의 끈을 놓지 않기 위해 매주 주말 '이벤트' 필수.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            var_risk: `
+                <div class="bible-card">
+                    <div class="card-header">
+                        <h1>⚠️ 리스크 대응 매뉴얼</h1>
+                        <span class="card-tag" style="background:#FF5252; color:white;">CRITICAL</span>
                     </div>
                     
-                    <p>역설적으로, <strong>양육의 스트레스가 사라지면 아이와의 관계가 더 좋아지는 경우</strong>가 많습니다. 엄마가 행복해 보이면, 아이도 죄책감을 덜 느낍니다.</p>
+                    <h3>1. 헤이그 아동 탈취 협약 (해외 루트 시)</h3>
+                    <p>남편 동의 없이 아이 데리고 귀국 안 하면 '유괴범' 됩니다. 반드시 출국 전 <strong>[공증된 여행/체류 동의서]</strong> 확보.</p>
+
+                    <h3>2. 상간 소송 (위자료)</h3>
+                    <p>이혼 전 두 사람의 관계가 입증되면, 여자는 유책배우자가 되어 이혼 청구가 기각될 수 있습니다. <strong>텔레그램/보안폴더</strong> 사용 생활화.</p>
+
+                    <h3>3. 초5 아이의 반란</h3>
+                    <p>지금 초5는 계획 실행 시 '중2'입니다. 가장 무서운 시기입니다. 억지로 합치려다 아이가 가출하면 모든 게 끝납니다. <strong>아이 의사를 1순위</strong>로 두세요.</p>
+                </div>
+            `,
+            role_def: `
+                <div class="bible-card">
+                    <h1>🤵👰 역할 정의서 (R&R)</h1>
+                    
+                    <h3>🤵 남자 (The Builder)</h3>
+                    <ul>
+                        <li><strong>경제:</strong> 여자가 언제든 몸만 와도 될 정도의 기반(집/사업/연금) 마련.</li>
+                        <li><strong>인내:</strong> 3년이든 10년이든 "당신 속도에 맞출게"라는 태도 견지.</li>
+                        <li><strong>교육:</strong> 아이들의 '진로/적성'을 책임지는 멘토.</li>
+                    </ul>
+
+                    <h3>👰 여자 (The Manager)</h3>
+                    <ul>
+                        <li><strong>조율:</strong> 남편과의 정리, 아이들의 정서, 남자의 기다림 사이에서 속도 조절.</li>
+                        <li><strong>현실:</strong> 교사직 유지 여부 결정 (연금 vs 일시금).</li>
+                        <li><strong>멘탈:</strong> 죄책감에 함몰되지 않고 "나의 행복이 아이의 행복"이라 믿기.</li>
+                    </ul>
                 </div>
             `
         };
 
-        function load(page) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+        // 탭 전환 기능
+        window.switchTab = function(tabId) {
+            const parent = event.target.parentElement;
+            // 버튼 스타일 초기화
+            parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 컨텐츠 보이기/숨기기
+            const contentDiv = parent.parentElement;
+            const targets = ['3yr_dom', '3yr_glo', '5yr_jeju', '5yr_biz', 'cus_mom', 'cus_dad'];
             
-            const content = document.getElementById('content');
-            content.style.opacity = 0;
-            setTimeout(() => {
-                content.innerHTML = pages[page];
-                content.style.opacity = 1;
-            }, 300);
-            
-            // 모바일 사이드바 닫기
-            if(window.innerWidth <= 768) {
-                document.querySelector('.sidebar').classList.remove('active');
+            // 현재 탭 그룹에 속한 타겟들만 제어
+            if(tabId.includes('3yr')) {
+                contentDiv.querySelector('#3yr_dom').style.display = (tabId === '3yr_dom') ? 'block' : 'none';
+                contentDiv.querySelector('#3yr_glo').style.display = (tabId === '3yr_glo') ? 'block' : 'none';
+            } else if(tabId.includes('5yr')) {
+                contentDiv.querySelector('#5yr_jeju').style.display = (tabId === '5yr_jeju') ? 'block' : 'none';
+                contentDiv.querySelector('#5yr_biz').style.display = (tabId === '5yr_biz') ? 'block' : 'none';
+            } else if(tabId.includes('cus')) {
+                contentDiv.querySelector('#cus_mom').style.display = (tabId === 'cus_mom') ? 'block' : 'none';
+                contentDiv.querySelector('#cus_dad').style.display = (tabId === 'cus_dad') ? 'block' : 'none';
             }
+        };
+
+        // 페이지 로드 기능
+        window.loadContent = function(key) {
+            // 버튼 활성화
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            if(event) event.currentTarget.classList.add('active');
+
+            // 컨텐츠 주입
+            const area = document.getElementById('content-area');
+            area.style.opacity = 0;
+            setTimeout(() => {
+                area.innerHTML = db[key];
+                area.style.opacity = 1;
+            }, 200);
+
+            // 모바일 닫기
+            if(window.innerWidth <= 768) toggleSidebar();
+        };
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
         }
 
-        // 초기 로드
-        document.getElementById('content').innerHTML = pages['wait_10yr']; // 추천 페이지 먼저 로드
+        // 초기 실행
+        document.getElementById('content-area').innerHTML = db['plan_5yr']; // 기본값 5년 플랜
+        document.querySelectorAll('.nav-btn')[1].classList.add('active');
     </script>
 </body>
 </html>
