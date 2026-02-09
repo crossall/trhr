@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>Life Strategy Planner</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:'Pretendard', sans-serif;
+}
+
+body{
+  margin:0;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color:#333;
+}
+
+/* 레이아웃 */
+.container{
+  display:flex;
+  height:100vh;
+}
+
+/* 사이드바 */
+.sidebar{
+  width:260px;
+  background:rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  padding:25px;
+  color:white;
+}
+
+.sidebar h2{
+  font-weight:700;
+  margin-bottom:25px;
+}
+
+.menu-btn{
+  display:block;
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,0.15);
+  color:white;
+  cursor:pointer;
+  text-align:left;
+  transition:0.25s;
+}
+
+.menu-btn:hover{
+  background:white;
+  color:#444;
+  transform:translateX(6px);
+}
+
+/* 메인 */
+.main{
+  flex:1;
+  padding:40px;
+  overflow:auto;
+}
+
+/* 카드 */
+.card{
+  background:white;
+  border-radius:20px;
+  padding:25px;
+  margin-bottom:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+  animation:fade 0.4s ease;
+}
+
+@keyframes fade{
+  from{opacity:0; transform:translateY(10px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+h1{
+  margin-top:0;
+}
+
+.step{
+  background:#f3f6ff;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:10px;
+}
+
+.checklist label{
+  display:block;
+  margin:6px 0;
+  cursor:pointer;
+}
+
+.bad{
+  color:#e74c3c;
+  font-weight:600;
+}
+
+.good{
+  color:#2ecc71;
+  font-weight:600;
+}
+
+.timeline{
+  border-left:4px solid #764ba2;
+  padding-left:20px;
+}
+
+.year{
+  margin-bottom:18px;
+}
+
+.tag{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  background:#764ba2;
+  color:white;
+  margin-right:6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- 사이드 메뉴 -->
+  <div class="sidebar">
+    <h2>🌿 Life Plan</h2>
+
+    <button class="menu-btn" onclick="show('overview')">전체 전략</button>
+    <button class="menu-btn" onclick="show('step1')">STEP 1 준비기</button>
+    <button class="menu-btn" onclick="show('step2')">STEP 2 이동기</button>
+    <button class="menu-btn" onclick="show('step3')">STEP 3 법적정리</button>
+    <button class="menu-btn" onclick="show('step4')">STEP 4 주거통합</button>
+    <button class="menu-btn" onclick="show('step5')">STEP 5 장기안정</button>
+    <button class="menu-btn" onclick="show('risk')">⚠ 리스크</button>
+    <button class="menu-btn" onclick="show('best')">⭐ 추천 시나리오</button>
+  </div>
+
+  <!-- 메인 -->
+  <div class="main" id="content"></div>
+
+</div>
+
+<script>
+
+const pages = {
+
+overview: `
+<div class="card">
+<h1>🎯 인생 통합 전략 대시보드</h1>
+<p>
+아이 안정성 + 교직 평판 + 법적 안정 + 커리어 + 사업을 동시에 만족하는
+<strong>5년 장기 로드맵</strong>입니다.
+</p>
+
+<div class="timeline">
+  <div class="year"><span class="tag">Year 0-1</span> 준비/비공개 설계</div>
+  <div class="year"><span class="tag">Year 1-2</span> 직업 이동 명분 확보</div>
+  <div class="year"><span class="tag">Year 2-3</span> 법적 정리</div>
+  <div class="year"><span class="tag">Year 3-4</span> 주거 통합</div>
+  <div class="year"><span class="tag">Year 4-5</span> 가족+사업 안정화</div>
+</div>
+</div>
+`,
+
+step1: `
+<div class="card">
+<h1>STEP 1 – 비공개 준비기 (0~1년)</h1>
+
+<div class="checklist">
+<label><input type="checkbox"> 법률 상담 (이혼/양육권/재산)</label>
+<label><input type="checkbox"> 자산/부채/소득 정리</label>
+<label><input type="checkbox"> 교수 이직/사업 계획 수립</label>
+<label><input type="checkbox"> 전보/휴직 제도 조사</label>
+<label><input type="checkbox"> 5년 인생 계획 문서화</label>
+</div>
+</div>
+`,
+
+step2: `
+<div class="card">
+<h1>STEP 2 – 이동 명분 만들기 (1~2년)</h1>
+
+<div class="step">남자 → 교수 임용/사업/연구년으로 타지역 이동</div>
+<div class="step">여자 → 연구년/전보/파견 명분</div>
+<div class="step">해외 연수 옵션 → 사회적 시선 최소화</div>
+
+<p class="good">✔ 관계 이동이 아니라 커리어 이동처럼 보여야 안전</p>
+</div>
+`,
+
+step3: `
+<div class="card">
+<h1>STEP 3 – 법적 정리 (2~3년)</h1>
+
+<div class="step">합의 이혼 협의</div>
+<div class="step">친권/양육권/교육 계획 수립</div>
+<div class="step">이혼 후 6~12개월 텀 유지</div>
+
+<p class="good">✔ 가장 중요한 전환점</p>
+</div>
+`,
+
+step4: `
+<div class="card">
+<h1>STEP 4 – 주거 통합 (3~4년)</h1>
+
+<div class="step">1단계 : 인접 거주</div>
+<div class="step">2단계 : 세대 분리형 주택</div>
+<div class="step">3단계 : 완전 합가/재혼</div>
+
+<p class="good">✔ 아이 적응을 최우선</p>
+</div>
+`,
+
+step5: `
+<div class="card">
+<h1>STEP 5 – 장기 안정 (4~5년)</h1>
+
+<div class="step">교육센터/에듀테크 사업 설립</div>
+<div class="step">교수 + 교사 연수 프로그램 운영</div>
+<div class="step">재무 통합 및 은퇴 설계</div>
+
+<p class="good">✔ 전문성 시너지 최대화</p>
+</div>
+`,
+
+risk: `
+<div class="card">
+<h1>⚠ 피해야 할 행동</h1>
+
+<p class="bad">✖ 기혼 상태 동거/합가</p>
+<p class="bad">✖ 학교/동료 공개 노출</p>
+<p class="bad">✖ 갑작스러운 전학+합가 동시 진행</p>
+<p class="bad">✖ SNS 흔적</p>
+</div>
+`,
+
+best: `
+<div class="card">
+<h1>⭐ 추천 최적 시나리오</h1>
+
+<div class="timeline">
+  <div class="year">Year1: 준비</div>
+  <div class="year">Year2: 남 교수 이직</div>
+  <div class="year">Year3: 합의 이혼</div>
+  <div class="year">Year4: 여자 전보 → 인접 거주</div>
+  <div class="year">Year5: 합가/재혼 + 사업 시작</div>
+</div>
+
+<p class="good">✔ 평판 리스크 최소 + 커리어 상승 + 가족 안정</p>
+</div>
+`
+
+}
+
+function show(page){
+  document.getElementById('content').innerHTML = pages[page];
+}
+
+show('overview');
+
+</script>
+</body>
+</html>
